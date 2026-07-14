@@ -12,8 +12,8 @@
 #include <vector>
 
 enum class TokenType {
-    Number, Identifier, Plus, Minus, Multiply, Devide, Assign, LParen, RParen, LBrace, RBrace,
-    Come, Var, Def, EndOfLine, Unknown
+    Number, Identifier, Plus, Minus, Multiply, Divide, Assign, LParen, RParen, LBrace, RBrace,
+    Comma, Var, Def, EndOfLine, Unknown
 };
 
 struct Token {
