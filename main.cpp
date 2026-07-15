@@ -11,8 +11,8 @@
 
 int main() {
     std::string input;
-    std::cout << "--- Тест Лексера запущено ---\n";
-    std::cout << "Введи вираз (або 'exit' для виходу):\n";
+    std::cout << "--- lexer test ---\n";
+    std::cout << "input:\n";
     
     while (true) {
         std::cout << "> ";
@@ -26,11 +26,8 @@ int main() {
         }
 
         Lexer lexer(input);
-        std::vector<Token> tokens = lexer.tokenize();
-
-        // Виводимо всі токени, щоб побачити, як лексер розбив рядок
+        std::vector<Token> tokens = lexer.tokenize();        
         for (const auto& token : tokens) {
-            // Виводимо тип як число (код enum) та саме значення
             std::cout << "[Type: " << static_cast<int>(token.type)
                       << ", Value: '" << token.value << "']\n";
         }
