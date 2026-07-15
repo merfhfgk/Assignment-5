@@ -16,6 +16,7 @@ double Evaluator::evaluate(ASTNode *node) {
     if (auto n = dynamic_cast<VariableNode*>(node)) return evalVariable(n);
     if (auto n = dynamic_cast<VarDecNode*>(node)) return evalVarDecl(n);
     if (auto n = dynamic_cast<FunctionCallNode*>(node)) return evalFunctionCall(n);
+    if (auto n = dynamic_cast<FunctionDefNode*>(node)) return evalFunctionDef(n);
     throw std::runtime_error("Unknown AST Node type");
 }
 
@@ -63,5 +64,24 @@ double Evaluator::evalFunctionCall(FunctionCallNode *node) {
         if (node->args.size() != 1) throw std::runtime_error("abs requires 1 arguments");
         return std::abs(evaluate(node->args[0].get()));
     }
-    throw std::runtime_error("Unknown function: " + node->functionName);
+    auto func = env.getFunction(node->functionName);
+    if (node->args.size() != func.params.size()){
+        throw std::runtime_error("Incorrect number of arguments for function '" + node->functionName + "'");
+    }
+    std::vector<double> argValues;
+    for (size_t i = 0; i < node->args.size(); i++) {
+        argValues.push_back(evaluate(node->args[i].get()));
+    }
+    Enviroment oldEnv = env;
+    for(size_t i = 0; i < func.params.size(); i++){
+        env.defineLocalVariable(func.params[i], argValues[i]);
+    }
+    double result = evaluate(func.body);
+    env = oldEnv;
+    return result;
+}
+
+double Evaluator::evalFunctionDef(FunctionDefNode* node) {
+    env.defineFunction(node->name, node->params, node->body.get());
+    return 0.0;
 }

@@ -45,6 +45,14 @@ public:
     : functionName(name), args(std::move(arguments)) {}
 };
 
+class FunctionDefNode : public ASTNode {
+public:
+    std::string name;
+    std::vector<std::string>params;
+    std::unique_ptr<ASTNode>body;
+    FunctionDefNode(const std::string& n, std::vector<std::string> p, std::unique_ptr<ASTNode>b) : name(n), params(std::move(p)), body(std::move(b)) {}
+};
+
 class VarDecNode : public ASTNode {
 public:
     std::string varName;

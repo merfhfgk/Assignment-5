@@ -34,6 +34,10 @@ std::vector<Token> Lexer::tokenize() {
     std::vector<Token> tokens;
     while (pos < text.length()){
         char currentChar = text[pos];
+        if (((unsigned char)currentChar < 32 && !std::isspace(currentChar)) || (unsigned char)currentChar > 127) {
+            pos++;
+            continue;
+        }
         if (std::isspace(currentChar)){
             pos++;
             continue;

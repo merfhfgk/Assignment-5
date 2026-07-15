@@ -59,6 +59,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
         return std::make_unique<NumberNode>(std::stod(token.value));
     }
     if (token.type == TokenType::LParen){
+        advance();
         auto node = parseExpression();
         expect(TokenType::RParen);
         return node;
@@ -86,6 +87,32 @@ std::unique_ptr<ASTNode> Parser::parseFactor() {
 }
 
 std:: unique_ptr<ASTNode>Parser::parseStatement() {
+    if(currentToken().type == TokenType::Def) {
+        advance();
+        if (currentToken().type != TokenType::Identifier) {
+            throw std::runtime_error("Expected function name after 'def'");
+        }
+        std::string funcName = currentToken().value;
+        advance();
+        expect(TokenType::LParen);
+        std::vector<std::string>params;
+        if (currentToken().type != TokenType::RParen) {
+            if (currentToken().type != TokenType::Identifier) throw std::runtime_error("Expected parameter name");
+            params.push_back(currentToken().value);
+            advance();
+            while (currentToken().type == TokenType::Comma) {
+                advance();
+                if (currentToken().type != TokenType::Identifier) throw std::runtime_error("Expected parameter name after comma");
+                params.push_back(currentToken().value);
+                advance();
+            }
+        }
+        expect(TokenType::RParen);
+        expect(TokenType::LBrace);
+        auto body = parseExpression();
+        expect(TokenType::RBrace);
+        return std::make_unique<FunctionDefNode>(funcName, std::move(params), std::move(body));
+    }
     if (currentToken().type == TokenType::Var) {
         advance();
         if (currentToken().type != TokenType::Identifier) {

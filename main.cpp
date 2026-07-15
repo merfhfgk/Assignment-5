@@ -8,10 +8,14 @@
 #include <iostream>
 #include <string>
 #include "Lexer.h"
+#include "Parser.h"
+#include "Evaluator.h"
 
 int main() {
     std::string input;
-    std::cout << "--- lexer test ---\n";
+    Evaluator evaluator;
+    std::vector<std::unique_ptr<ASTNode>> astMemory;
+    std::cout << "test\n";
     std::cout << "input:\n";
     
     while (true) {
@@ -25,11 +29,21 @@ int main() {
             continue;
         }
 
-        Lexer lexer(input);
-        std::vector<Token> tokens = lexer.tokenize();        
-        for (const auto& token : tokens) {
-            std::cout << "[Type: " << static_cast<int>(token.type)
-                      << ", Value: '" << token.value << "']\n";
+        try {
+            Lexer lexer(input);
+            std::vector<Token> tokens = lexer.tokenize();
+
+            Parser parser(tokens);
+            std::unique_ptr<ASTNode> ast = parser.parse();
+
+            if (ast) {
+                double result = evaluator.evaluate(ast.get());
+                astMemory.push_back(std::move(ast));
+                std::cout << result << "\n";
+            }
+        }
+        catch (const std::exception& e) {
+            std::cout << "Error: " << e.what() << "\n";
         }
     }
 
