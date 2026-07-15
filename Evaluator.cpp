@@ -64,6 +64,29 @@ double Evaluator::evalFunctionCall(FunctionCallNode *node) {
         if (node->args.size() != 1) throw std::runtime_error("abs requires 1 arguments");
         return std::abs(evaluate(node->args[0].get()));
     }
+    if (node->functionName == "integral"){
+        if (node->args.size() != 3) throw std::runtime_error("integral requires 3 arguments");
+        auto funcNode = dynamic_cast<VariableNode*>(node->args[0].get());
+        if (!funcNode) throw std::runtime_error("First argument of integral must be a function name");
+        std::string targetFuncName = funcNode->name;
+        double a = evaluate(node->args[1].get());
+        double b = evaluate(node->args[2].get());
+        auto targetFunc = env.getFunction(targetFuncName);
+        if (targetFunc.params.size() != 1) throw std::runtime_error("Integral only supports functions with 1 parameter");
+        int steps = 1000;
+        double stepSize = (b - a) / steps;
+        Enviroment oldEnv = env;
+        auto callF = [&](double x) {
+            env.defineLocalVariable(targetFunc.params[0], x);
+            return evaluate(targetFunc.body);
+        };
+        double sum = 0.5 * (callF(a) + callF(b));
+        for (int i = 1; i < steps; i++) {
+            sum += callF(a + i * stepSize);
+        }
+        env = oldEnv;
+        return sum * stepSize;
+    }
     auto func = env.getFunction(node->functionName);
     if (node->args.size() != func.params.size()){
         throw std::runtime_error("Incorrect number of arguments for function '" + node->functionName + "'");

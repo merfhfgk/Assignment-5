@@ -5,7 +5,7 @@
 //  Created by Maria Goncharuk on 14.07.2026.
 //
 
-#include "Lexer.h"
+#include "lexer.h"
 #include <cctype>
 
 Lexer::Lexer(const std::string& input) : text(input), pos(0) {}

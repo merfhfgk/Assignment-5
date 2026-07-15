@@ -54,6 +54,11 @@ std::unique_ptr<ASTNode> Parser::parseTerm() {
 
 std::unique_ptr<ASTNode> Parser::parseFactor() {
     Token token = currentToken();
+    if (token.type == TokenType::Minus){
+        advance();
+        auto right = parseFactor();
+        return std::make_unique<BinaryOpNode>('-', std::make_unique<NumberNode>(0.0), std::move(right));
+    }
     if (token.type == TokenType::Number){
         advance();
         return std::make_unique<NumberNode>(std::stod(token.value));

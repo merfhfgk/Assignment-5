@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <string>
-#include "Lexer.h"
+#include "lexer.h"
 #include "Parser.h"
 #include "Evaluator.h"
 
@@ -39,6 +39,7 @@ int main() {
             if (ast) {
                 double result = evaluator.evaluate(ast.get());
                 astMemory.push_back(std::move(ast));
+
                 std::cout << result << "\n";
             }
         }
